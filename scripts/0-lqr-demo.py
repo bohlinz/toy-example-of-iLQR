@@ -21,15 +21,15 @@ def solve_dare(A: np.matrix, B: np.matrix,
 
 
 def main():
-    A =np.mat('1.9500,  -0.0250,    -1.6000; \
+    A =np.asmatrix('1.9500,  -0.0250,    -1.6000; \
               1.6000,   1.1000,     -3.2000; \
               0.4250,   0.185,      0.3000')
-    B =np.mat('0 1 0; 1 1 1').T
+    B =np.asmatrix('0 1 0; 1 1 1').T
     nu = 2
     nx = 3
     # simulate original system without control (open loop)
     N = 50  # number of discrete time steps
-    x = np.mat(np.zeros((3, N)))
+    x = np.asmatrix(np.zeros((3, N)))
     x[:, 0] = np.array([[1], [2], [3]])
     for k in np.arange(N - 1):
         x[:, k + 1] = A @ x[:, k]
@@ -60,8 +60,8 @@ def main():
     print(f"Pstar = \n{Pstar}")
     print(f"Kstar = \n{Kstar}")
 
-    x = np.mat(np.zeros((nx, N)))
-    u = np.mat(np.zeros((nu, N)))
+    x = np.asmatrix(np.zeros((nx, N)))
+    u = np.asmatrix(np.zeros((nu, N)))
     norm_u = np.zeros(N)
     x[:, 0] = np.array([[1], [2], [3]])
     for k in np.arange(N - 1):

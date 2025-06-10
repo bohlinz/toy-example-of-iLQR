@@ -6,6 +6,10 @@
  * Copyright 2024 puyu, All Rights Reserved.
  */
 
+
+ //CiLQR在迭代优化过程中直接处理约束，而不仅仅是通过代价函数的惩罚项。
+ //通常结合了约束优化技术，例如投影方法、障碍函数、增广拉格朗日方法（ALM）等，来确保解满足约束条件。
+
 #include "cilqr_solver.hpp"
 
 #include <fmt/core.h>

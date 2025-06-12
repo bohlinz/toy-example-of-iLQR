@@ -13,6 +13,7 @@
 #include <any>
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 class GlobalConfig {
 private:

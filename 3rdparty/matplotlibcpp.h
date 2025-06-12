@@ -279,7 +279,7 @@ private:
         s_python_function_colorbar = PyObject_GetAttrString(pymod, "colorbar");
         s_python_function_subplots_adjust = safe_import(pymod,"subplots_adjust");
         s_python_function_rcparams = PyObject_GetAttrString(pymod, "rcParams");
-	s_python_function_spy = PyObject_GetAttrString(pymod, "spy");
+    s_python_function_spy = PyObject_GetAttrString(pymod, "spy");
 #ifndef WITHOUT_NUMPY
         s_python_function_imshow = safe_import(pymod, "imshow");
 #endif
@@ -371,8 +371,8 @@ PyObject* get_array(const std::vector<Numeric>& v)
         PyArray_UpdateFlags(reinterpret_cast<PyArrayObject*>(varray), NPY_ARRAY_OWNDATA);
         return varray;
     }
-	
-	_import_array();
+    
+    _import_array();
     PyObject* varray = PyArray_SimpleNewFromData(1, &vsize, type, (void*)(v.data()));
     return varray;
 }
@@ -383,7 +383,7 @@ PyObject* get_array(const Numeric& v)
     npy_intp vsize = v.rows();
     NPY_TYPES type = NPY_DOUBLE;
 
-	_import_array();
+    _import_array();
     PyObject* varray = PyArray_SimpleNewFromData(1, &vsize, type, (void*)(v.data()));
     return varray;
 }
@@ -818,12 +818,12 @@ bool fill(const std::vector<Numeric>& x, const std::vector<Numeric>& y, const st
     // construct keyword args
     PyObject* kwargs = PyDict_New();
     for (auto it = keywords.begin(); it != keywords.end(); ++it) {
-		if (it->first == "alpha") {
-      		PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(std::stod(it->second)));
-    	} else {
-        	PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
-    	}
-	}
+        if (it->first == "alpha") {
+            PyDict_SetItemString(kwargs, it->first.c_str(), PyFloat_FromDouble(std::stod(it->second)));
+        } else {
+            PyDict_SetItemString(kwargs, it->first.c_str(), PyUnicode_FromString(it->second.c_str()));
+        }
+    }
 
     PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_fill, args, kwargs);
 
@@ -2905,61 +2905,8 @@ inline bool plot(const std::vector<double>& x, const std::vector<double>& y, con
     return plot<double>(x,y,keywords);
 }
 
-inline bool plot(const Eigen::VectorXd& x, const Eigen::VectorXd& y,
-                 const std::map<std::string, std::string>& keywords) {
-    assert(x.rows() == y.rows());
 
-    detail::_interpreter::get();
-    PyObject* xarray = detail::get_array(x);
-    PyObject* yarray = detail::get_array(y);
-
-    // construct positional args
-    PyObject* args = PyTuple_New(2);
-    PyTuple_SetItem(args, 0, xarray);
-    PyTuple_SetItem(args, 1, yarray);
-    // construct keyword args
-    PyObject* kwargs = PyDict_New();
-    for (std::map<std::string, std::string>::const_iterator it = keywords.begin();
-         it != keywords.end(); ++it) {
-        if (it->first == "linewidth" || it->first == "alpha" || it->first == "zorder") {
-            PyDict_SetItemString(kwargs, it->first.c_str(), PyInt_FromLong(std::stol(it->second)));
-        } else {
-            PyDict_SetItemString(kwargs, it->first.c_str(),
-                                 PyString_FromString(it->second.c_str()));
-        }
-    }
-
-    PyObject* res = PyObject_Call(detail::_interpreter::get().s_python_function_plot, args, kwargs);
-
-    Py_DECREF(args);
-    Py_DECREF(kwargs);
-    if (res) Py_DECREF(res);
-
-    return res;
-}
-
-inline bool plot(const Eigen::VectorXd& x, const Eigen::VectorXd& y, const std::string& format = "") {
-    assert(x.rows() == y.rows());
-
-    detail::_interpreter::get();
-
-    PyObject* xarray = detail::get_array(x);
-    PyObject* yarray = detail::get_array(y);
-
-    PyObject* pystring = PyString_FromString(format.c_str());
-
-    PyObject* plot_args = PyTuple_New(3);
-    PyTuple_SetItem(plot_args, 0, xarray);
-    PyTuple_SetItem(plot_args, 1, yarray);
-    PyTuple_SetItem(plot_args, 2, pystring);
-
-    PyObject* res = PyObject_CallObject(detail::_interpreter::get().s_python_function_plot, plot_args);
-
-    Py_DECREF(plot_args);
-    if(res) Py_DECREF(res);
-
-    return res;
-}
+// 已禁用 Eigen::VectorXd plot 重载，防止误用导致编译错误。
 
 /*
  * This class allows dynamic plots, ie changing the plotted data without clearing and re-plotting

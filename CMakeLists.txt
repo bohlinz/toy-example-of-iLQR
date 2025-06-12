@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(MotionPlanning)
 
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,/usr/lib/x86_64-linux-gnu") # 用系统的libc++
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
 endif()
@@ -31,6 +33,10 @@ if(Python3_NumPy_FOUND)
 else()
   target_compile_definitions(matplotlib_cpp INTERFACE WITHOUT_NUMPY)
 endif()
+
+# === Add numpy include dir for matplotlibcpp ===
+# This is required for <numpy/arrayobject.h> in src/utils.cpp
+include_directories("/home/bolin/miniconda3/lib/python3.13/site-packages/numpy/_core/include")
 
 find_package(fmt REQUIRED)
 find_package(spdlog REQUIRED)

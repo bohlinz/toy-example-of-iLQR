@@ -9,10 +9,11 @@
 #include "matplotlibcpp.h"
 #include "utils.hpp"
 
+
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
-
 #include <fstream>
+#include <numpy/arrayobject.h>
 
 using std::string;
 using namespace Eigen;
@@ -187,8 +188,12 @@ void plot_obstacle_boundary(const Eigen::Vector4d& ego_state,
         sample_x.unaryExpr([ego_rear](double x) { return x + ego_rear[0]; });
     Eigen::VectorXd rear_circle_y =
         sample_y.unaryExpr([ego_rear](double x) { return x + ego_rear[1]; });
-    plt::plot(front_circle_x, front_circle_y, {{"color", "red"}, {"zorder", "12"}});
-    plt::plot(rear_circle_x, rear_circle_y, {{"color", "red"}, {"zorder", "12"}});
+    std::vector<double> front_circle_x_vec(front_circle_x.data(), front_circle_x.data() + front_circle_x.size());
+    std::vector<double> front_circle_y_vec(front_circle_y.data(), front_circle_y.data() + front_circle_y.size());
+    std::vector<double> rear_circle_x_vec(rear_circle_x.data(), rear_circle_x.data() + rear_circle_x.size());
+    std::vector<double> rear_circle_y_vec(rear_circle_y.data(), rear_circle_y.data() + rear_circle_y.size());
+    plt::plot(front_circle_x_vec, front_circle_y_vec, {{"color", "red"}, {"zorder", "12"}});
+    plt::plot(rear_circle_x_vec, rear_circle_y_vec, {{"color", "red"}, {"zorder", "12"}});
 
     int obstacle_num = obstacles_info.cols();
     for (size_t idx = 0; idx < obstacle_num; ++idx) {
@@ -208,15 +213,18 @@ void plot_obstacle_boundary(const Eigen::Vector4d& ego_state,
             rotated_points.row(0).unaryExpr([cur_state](double x) { return x + cur_state[0]; });
         Eigen::VectorXd points_y =
             rotated_points.row(1).unaryExpr([cur_state](double x) { return x + cur_state[1]; });
-        plt::plot(points_x, points_y, "-r");
+        std::vector<double> points_x_vec(points_x.data(), points_x.data() + points_x.size());
+        std::vector<double> points_y_vec(points_y.data(), points_y.data() + points_y.size());
+        plt::plot(points_x_vec, points_y_vec, "-r");
     }
 }
 
 void imshow(const Outlook& out, const std::vector<double>& state, const std::vector<double>& para) {
     static PyObject* imshow_func = nullptr;
+
     if (imshow_func == nullptr) {
         Py_Initialize();
-        _import_array();
+        import_array1(); // numpy 宏兼容 C++，防止 return 语义报错
 
         std::filesystem::path source_file_path(__FILE__);
         std::filesystem::path project_path = source_file_path.parent_path().parent_path();

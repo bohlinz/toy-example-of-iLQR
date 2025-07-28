@@ -99,7 +99,7 @@ std::tuple<Eigen::MatrixX2d, Eigen::MatrixX4d> CILQRSolver::solve(
     Eigen::MatrixX2d u;
     Eigen::MatrixX4d x;
     if (!is_first_solve && use_last_solution) {
-        std::tie(u, x) = get_init_traj_increment(x0);
+        std::tie(u, x) = get_init_traj_increment(x0); // iLQR帧间线性化基点更新
     } else {
         std::tie(u, x) = get_init_traj(x0);
         is_first_solve = false;
@@ -113,7 +113,7 @@ std::tuple<Eigen::MatrixX2d, Eigen::MatrixX4d> CILQRSolver::solve(
     bool iter_effective_flag = false;
     for (uint32_t itr = 0; itr < max_iter; ++itr) {
         auto [new_u, new_x, new_J] = iter_step(u, x, lamb, ref_waypoints, ref_velo, obs_preds,
-                                               road_boaders, iter_effective_flag);
+                                               road_boaders, iter_effective_flag); // iLQR迭代优化
         if (iter_effective_flag) {
             x = new_x;
             u = new_u;
